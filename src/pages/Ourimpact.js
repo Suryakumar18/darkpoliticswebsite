@@ -24,7 +24,7 @@ import {
 } from 'lucide-react'
 
 const OurImpact = () => {
-  const API_BASE_URL = 'http://localhost:5000/api/our-impact';
+  const API_BASE_URL = 'https://darkpoliticswebsitebackend.onrender.com/api/our-impact';
   const [visibleStats, setVisibleStats] = useState([])
   const [activeTab, setActiveTab] = useState('overview')
   const [loading, setLoading] = useState(true)

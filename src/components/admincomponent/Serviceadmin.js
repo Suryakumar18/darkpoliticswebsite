@@ -64,7 +64,7 @@ const Serviceadmin = () => {
     { name: 'Target', component: Target }
   ];
 
-  const API_BASE_URL = 'http://localhost:5000/api/services';
+  const API_BASE_URL = 'https://darkpoliticswebsitebackend.onrender.com/api/services';
 
   // Fetch services data
   const fetchServicesData = async () => {
@@ -324,7 +324,7 @@ const Serviceadmin = () => {
 
 const handleHeaderUpdate = async (field, value) => {
   try {
-    const response = await fetch(`http://localhost:5000/api/services-content/header`, {
+    const response = await fetch(`https://darkpoliticswebsitebackend.onrender.com/api/services-content/header`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -357,7 +357,7 @@ const handleHeaderUpdate = async (field, value) => {
   // Handle CTA section update
 const handleCTAUpdate = async (field, value) => {
   try {
-    const response = await fetch(`http://localhost:5000/api/services-content/cta`, {
+    const response = await fetch(`https://darkpoliticswebsitebackend.onrender.com/api/services-content/cta`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

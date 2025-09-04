@@ -44,7 +44,7 @@ const ContactAdmin = () => {
   const fetchContactData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/contact');
+      const response = await fetch('https://darkpoliticswebsitebackend.onrender.com/api/contact');
       if (!response.ok) throw new Error('Failed to fetch contact data');
       const data = await response.json();
       setContactData(data.data);
@@ -82,7 +82,7 @@ const ContactAdmin = () => {
   const handleSaveContactInfo = async () => {
     try {
       setSubmitLoading(true);
-      const response = await fetch(`http://localhost:5000/api/contact/info/${editMode}`, {
+      const response = await fetch(`https://darkpoliticswebsitebackend.onrender.com/api/contact/info/${editMode}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editingContent)
@@ -111,7 +111,7 @@ const ContactAdmin = () => {
     
     try {
       setSubmitLoading(true);
-      const response = await fetch('http://localhost:5000/api/contact/info', {
+      const response = await fetch('https://darkpoliticswebsitebackend.onrender.com/api/contact/info', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newContactInfo)
@@ -133,7 +133,7 @@ const ContactAdmin = () => {
     if (!window.confirm('Are you sure you want to delete this contact information?')) return;
     
     try {
-      const response = await fetch(`http://localhost:5000/api/contact/info/${infoId}`, {
+      const response = await fetch(`https://darkpoliticswebsitebackend.onrender.com/api/contact/info/${infoId}`, {
         method: 'DELETE'
       });
       
@@ -148,7 +148,7 @@ const ContactAdmin = () => {
 
   const toggleContactInfoActive = async (infoId, currentStatus) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/contact/info/${infoId}/toggle`, {
+      const response = await fetch(`https://darkpoliticswebsitebackend.onrender.com/api/contact/info/${infoId}/toggle`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ active: !currentStatus })
@@ -165,7 +165,7 @@ const ContactAdmin = () => {
 
   const handleUpdateOfficeDetails = async (field, value) => {
     try {
-      const response = await fetch('http://localhost:5000/api/contact/office', {
+      const response = await fetch('https://darkpoliticswebsitebackend.onrender.com/api/contact/office', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ [field]: value })

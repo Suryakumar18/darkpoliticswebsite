@@ -39,7 +39,7 @@ const AboutUsAdmin = () => {
   });
 
   // API base URL - adjust according to your backend
-  const API_BASE_URL = 'http://localhost:5000/api/aboutus';
+  const API_BASE_URL = 'https://darkpoliticswebsitebackend.onrender.com/api/aboutus';
 
   const fetchAboutUsData = async () => {
     try {

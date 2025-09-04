@@ -62,7 +62,7 @@ const OurImpactAdmin = () => {
   });
 
   // API base URL
-  const API_BASE_URL = 'http://localhost:5000/api/our-impact';
+  const API_BASE_URL = 'https://darkpoliticswebsitebackend.onrender.com/api/our-impact';
 
   // Fetch impact data
   const fetchImpactData = async () => {

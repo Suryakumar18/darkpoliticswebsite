@@ -28,7 +28,7 @@ const CareerAdmin = () => {
   const [submitLoading, setSubmitLoading] = useState(false);
 
   // API base URL
-  const API_BASE_URL = 'http://localhost:5000/api/career';
+  const API_BASE_URL = 'https://darkpoliticswebsitebackend.onrender.com/api/career';
 
   // Fetch career data
   const fetchCareerData = async () => {

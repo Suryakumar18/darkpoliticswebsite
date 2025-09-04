@@ -31,7 +31,7 @@ const Homeadmin = () => {
   const [submitLoading, setSubmitLoading] = useState(false);
 
   // API base URL
-  const API_BASE_URL = 'http://localhost:5000/api/homepage';
+  const API_BASE_URL = 'https://darkpoliticswebsitebackend.onrender.com/api/homepage';
 
   // Fetch homepage data
   const fetchHomepageData = async () => {
