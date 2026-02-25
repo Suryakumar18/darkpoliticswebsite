@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import {
   Home,
   Info,
@@ -77,10 +78,40 @@ const ImpactComponent = () => (
 )
 
 const AdminPanel = () => {
+  const navigate = useNavigate()
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [activeMenuItem, setActiveMenuItem] = useState("home")
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
+
+  // Check authentication on component mount
+  useEffect(() => {
+    const checkAuth = () => {
+      try {
+        const authToken = localStorage.getItem('authToken')
+        
+        if (!authToken) {
+          // No token found, redirect to login
+          navigate('/login')
+          return
+        }
+        
+        // Optional: You can add token validation here
+        // For example, check if token is expired or make an API call to verify
+        
+        setIsAuthenticated(true)
+      } catch (error) {
+        console.error('Error checking authentication:', error)
+        navigate('/login')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    checkAuth()
+  }, [navigate])
 
   const menuItems = [
     { label: "HOME", icon: <Home size={18} />, id: "home", component: Homeadmin },
@@ -89,7 +120,7 @@ const AdminPanel = () => {
     { label: "USER MANAGEMENT", icon: <UserCheck size={18} />, id: "user-management", component: UserManagementComponent },
     { label: "CAREER", icon: <Briefcase size={18} />, id: "career", component: CareerAdmin },
     { label: "CONTACT", icon: <Mail size={18} />, id: "contact", component: ContactAdmin },
-    { label: "OUR IMPACT", icon: <TrendingUp size={18} />, id: "impact", component:OurImpactAdmin },
+    { label: "OUR IMPACT", icon: <TrendingUp size={18} />, id: "impact", component: OurImpactAdmin },
   ]
 
   const notifications = [
@@ -98,8 +129,55 @@ const AdminPanel = () => {
     { id: 3, text: "Revenue target achieved for this month", time: "3 hours ago" },
   ]
 
+  const handleSignOut = () => {
+    // Clear auth token from localStorage
+    localStorage.removeItem('authToken')
+    // Optional: Remove any other stored user data
+    localStorage.removeItem('userData')
+    // Redirect to login page
+    navigate('/login')
+  }
+
   // Fixed: Changed HomeComponent to Homeadmin (the correct imported component)
   const ActiveComponent = menuItems.find(item => item.id === activeMenuItem)?.component || Homeadmin
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #0a0f1c 0%, #1a1f3a 50%, #0a0f1c 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '50px',
+            height: '50px',
+            border: '3px solid rgba(255, 107, 0, 0.3)',
+            borderTop: '3px solid #ff6b00',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 20px'
+          }} />
+          <p>Loading...</p>
+        </div>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    )
+  }
+
+  // Don't render anything if not authenticated (will be redirected)
+  if (!isAuthenticated) {
+    return null
+  }
 
   return (
     <>
@@ -672,6 +750,7 @@ const AdminPanel = () => {
                   </div>
                   <div
                     className="dropdown-item"
+                    onClick={handleSignOut}
                     style={{
                       color: "#ef4444",
                       borderTop: "1px solid rgba(255, 255, 255, 0.08)",
