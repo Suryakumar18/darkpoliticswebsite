@@ -737,6 +737,7 @@ const Homeadmin = () => {
           font-size: 14px;
           color: rgba(255, 255, 255, 0.7);
         }
+        
 
         @keyframes spin {
           from {
@@ -753,7 +754,7 @@ const Homeadmin = () => {
       `}</style>
 
       <div className="admin-header">
-        <h1 className="admin-title">Homepage</h1>
+        <h1 className="admin-title">Homepage 123</h1>
         <p className="admin-subtitle">Manage your website's homepage content and background images</p>
       </div>
 
@@ -1257,3 +1258,4 @@ const Homeadmin = () => {
 
 
 export default Homeadmin;
+
