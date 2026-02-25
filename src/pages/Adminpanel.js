@@ -117,7 +117,7 @@ const AdminPanel = () => {
     { label: "HOME", icon: <Home size={18} />, id: "home", component: Homeadmin },
     { label: "ABOUT US", icon: <Info size={18} />, id: "about-us", component: AboutUsAdmin },
     { label: "SERVICES", icon: <Building size={18} />, id: "services", component: Serviceadmin },
-    { label: "USER MANAGEMENT", icon: <UserCheck size={18} />, id: "user-management", component: UserManagementComponent },
+ 
     { label: "CAREER", icon: <Briefcase size={18} />, id: "career", component: CareerAdmin },
     { label: "CONTACT", icon: <Mail size={18} />, id: "contact", component: ContactAdmin },
     { label: "OUR IMPACT", icon: <TrendingUp size={18} />, id: "impact", component: OurImpactAdmin },
@@ -795,3 +795,4 @@ const AdminPanel = () => {
 }
 
 export default AdminPanel
+
