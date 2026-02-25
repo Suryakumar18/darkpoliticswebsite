@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   Home,
@@ -33,14 +33,7 @@ const AdminPanel = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [activeMenuItem, setActiveMenuItem] = useState("home")
-  const [showProfileMenu, setShowProfileMenu] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
-  
-  // Refs for dropdown menus
-  const profileMenuRef = useRef(null)
-  const notificationsRef = useRef(null)
-  const profileBtnRef = useRef(null)
-  const notificationsBtnRef = useRef(null)
 
   // Check authentication on component mount
   useEffect(() => {
@@ -65,34 +58,6 @@ const AdminPanel = () => {
 
     checkAuth()
   }, [navigate])
-
-  // Handle click outside to close dropdowns
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // Close profile menu if clicked outside
-      if (showProfileMenu && 
-          profileMenuRef.current && 
-          !profileMenuRef.current.contains(event.target) &&
-          profileBtnRef.current && 
-          !profileBtnRef.current.contains(event.target)) {
-        setShowProfileMenu(false)
-      }
-      
-      // Close notifications if clicked outside
-      if (showNotifications && 
-          notificationsRef.current && 
-          !notificationsRef.current.contains(event.target) &&
-          notificationsBtnRef.current && 
-          !notificationsBtnRef.current.contains(event.target)) {
-        setShowNotifications(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [showProfileMenu, showNotifications])
 
   const menuItems = [
     { label: "HOME", icon: <Home size={18} />, id: "home", component: Homeadmin },
@@ -120,31 +85,12 @@ const AdminPanel = () => {
       // localStorage.removeItem('userPermissions')
       // localStorage.removeItem('userRole')
       
-      // Close the profile menu
-      setShowProfileMenu(false)
-      
       // Redirect to login page with replace to prevent going back
       navigate('/login', { replace: true })
     } catch (error) {
       console.error('Error during sign out:', error)
       // Even if there's an error, try to redirect
       navigate('/login', { replace: true })
-    }
-  }
-
-  const handleProfileMenuToggle = () => {
-    setShowProfileMenu(!showProfileMenu)
-    // Close notifications if open
-    if (showNotifications) {
-      setShowNotifications(false)
-    }
-  }
-
-  const handleNotificationsToggle = () => {
-    setShowNotifications(!showNotifications)
-    // Close profile menu if open
-    if (showProfileMenu) {
-      setShowProfileMenu(false)
     }
   }
 
@@ -459,27 +405,49 @@ const AdminPanel = () => {
           color: white;
         }
 
-        .profile-btn {
+        .logout-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: rgba(239, 68, 68, 0.15);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          border-radius: 10px;
+          padding: 8px 16px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          color: #ef4444;
+          font-size: 13px;
+          font-weight: 600;
+        }
+
+        .logout-btn:hover {
+          background: rgba(239, 68, 68, 0.25);
+          border-color: rgba(239, 68, 68, 0.5);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+
+        .logout-btn svg {
+          transition: transform 0.3s ease;
+        }
+
+        .logout-btn:hover svg {
+          transform: translateX(3px);
+        }
+
+        .profile-info {
           display: flex;
           align-items: center;
           gap: 10px;
+          padding: 8px 12px;
           background: rgba(30, 35, 66, 0.5);
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 10px;
-          padding: 8px 12px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          position: relative;
-        }
-
-        .profile-btn:hover {
-          background: rgba(255, 107, 0, 0.1);
-          border-color: rgba(255, 107, 0, 0.3);
         }
 
         .profile-avatar {
-          width: 28px;
-          height: 28px;
+          width: 32px;
+          height: 32px;
           background: linear-gradient(135deg, #ff6b00, #ff9d33);
           border-radius: 50%;
           display: flex;
@@ -489,63 +457,19 @@ const AdminPanel = () => {
           font-weight: 600;
         }
 
-        .profile-info h4 {
+        .profile-details {
+          line-height: 1.4;
+        }
+
+        .profile-details h4 {
           font-size: 12px;
           font-weight: 600;
           color: white;
         }
 
-        .profile-info p {
+        .profile-details p {
           font-size: 10px;
           color: rgba(255, 255, 255, 0.6);
-        }
-
-        .dropdown-menu {
-          position: absolute;
-          top: 100%;
-          right: 0;
-          width: 200px;
-          background: rgba(15, 23, 42, 0.95);
-          backdrop-filter: blur(25px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 12px;
-          padding: 8px;
-          margin-top: 5px;
-          opacity: ${showProfileMenu ? "1" : "0"};
-          visibility: ${showProfileMenu ? "visible" : "hidden"};
-          transform: translateY(${showProfileMenu ? "0" : "-10px"});
-          transition: all 0.3s ease;
-          z-index: 1000;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-        }
-
-        .dropdown-item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 10px 12px;
-          border-radius: 8px;
-          color: rgba(255, 255, 255, 0.7);
-          font-size: 13px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-
-        .dropdown-item:hover {
-          background: rgba(255, 107, 0, 0.1);
-          color: #ff9d33;
-        }
-
-        .dropdown-item.logout-item {
-          color: #ef4444;
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
-          margin-top: 8px;
-          padding-top: 12px;
-        }
-
-        .dropdown-item.logout-item:hover {
-          background: rgba(239, 68, 68, 0.1);
-          color: #ef4444;
         }
 
         .notifications-dropdown {
@@ -663,6 +587,10 @@ const AdminPanel = () => {
             display: none;
           }
 
+          .profile-details {
+            display: none;
+          }
+
           .content-area {
             padding: 20px;
           }
@@ -730,15 +658,22 @@ const AdminPanel = () => {
                 <input type="text" className="search-input" placeholder="Search anything..." />
               </div>
 
+              <div className="profile-info">
+                <div className="profile-avatar">AD</div>
+                <div className="profile-details">
+                  <h4>Admin User</h4>
+                  <p>Super Admin</p>
+                </div>
+              </div>
+
               <div 
                 className="navbar-btn" 
-                onClick={handleNotificationsToggle}
-                ref={notificationsBtnRef}
+                onClick={() => setShowNotifications(!showNotifications)}
               >
                 <Bell size={18} />
                 <div className="notification-badge">3</div>
 
-                <div className="notifications-dropdown" ref={notificationsRef}>
+                <div className="notifications-dropdown">
                   <div className="notifications-header">
                     <h4 style={{ color: "white", fontSize: "14px", fontWeight: "600" }}>Notifications</h4>
                     <span style={{ color: "#ff9d33", fontSize: "11px", cursor: "pointer" }}>Mark all read</span>
@@ -752,47 +687,10 @@ const AdminPanel = () => {
                 </div>
               </div>
 
-              <div 
-                className="profile-btn" 
-                onClick={handleProfileMenuToggle}
-                ref={profileBtnRef}
-              >
-                <div className="profile-avatar">AD</div>
-                <div className="profile-info">
-                  <h4>Admin User</h4>
-                  <p>Super Admin</p>
-                </div>
-                <ChevronDown
-                  size={14}
-                  style={{
-                    color: "rgba(255, 255, 255, 0.7)",
-                    transform: showProfileMenu ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "transform 0.3s ease",
-                  }}
-                />
-
-                <div className="dropdown-menu" ref={profileMenuRef}>
-                  <div className="dropdown-item">
-                    <User size={14} />
-                    Profile Settings
-                  </div>
-                  <div className="dropdown-item">
-                    <Settings size={14} />
-                    Preferences
-                  </div>
-                  <div className="dropdown-item">
-                    <Shield size={14} />
-                    Security
-                  </div>
-                  <div
-                    className="dropdown-item logout-item"
-                    onClick={handleSignOut}
-                  >
-                    <LogOut size={14} />
-                    Sign Out
-                  </div>
-                </div>
-              </div>
+              <button className="logout-btn" onClick={handleSignOut}>
+                <LogOut size={16} />
+                Logout
+              </button>
             </div>
           </header>
 
@@ -801,6 +699,21 @@ const AdminPanel = () => {
             <ActiveComponent />
           </main>
         </div>
+
+        {/* Click outside handler for notifications */}
+        {showNotifications && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 999,
+            }}
+            onClick={() => setShowNotifications(false)}
+          />
+        )}
       </div>
     </>
   )
