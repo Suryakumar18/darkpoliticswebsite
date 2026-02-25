@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   Home,
@@ -26,56 +26,6 @@ import Serviceadmin from "../components/admincomponent/Serviceadmin"
 import CareerAdmin from "../components/admincomponent/CarrearAdmin"
 import OurImpactAdmin from "../components/admincomponent/Ourimpactadmin"
 import ContactAdmin from "../components/admincomponent/ContactAdmin"
-// Import other components as needed
-// import AboutUsAdmin from "../components/admincomponent/AboutUsAdmin"
-// import ServicesAdmin from "../components/admincomponent/ServicesAdmin"
-// import UserManagementAdmin from "../components/admincomponent/UserManagementAdmin"
-// import CareerAdmin from "../components/admincomponent/CareerAdmin"
-// import ContactAdmin from "../components/admincomponent/ContactAdmin"
-// import ImpactAdmin from "../components/admincomponent/ImpactAdmin"
-
-// Component placeholders for different sections (replace these with your actual imports)
-const AboutUsComponent = () => (
-  <div className="content-section">
-    <h2>About Us</h2>
-    <p>Manage company information and organizational content here.</p>
-  </div>
-)
-
-const ServicesComponent = () => (
-  <div className="content-section">
-    <h2>Services</h2>
-    <p>Manage your service offerings and client solutions.</p>
-  </div>
-)
-
-const UserManagementComponent = () => (
-  <div className="content-section">
-    <h2>User Management</h2>
-    <p>Manage users, roles, and permissions across the platform.</p>
-  </div>
-)
-
-const CareerComponent = () => (
-  <div className="content-section">
-    <h2>Career</h2>
-    <p>Manage job postings, applications, and recruitment processes.</p>
-  </div>
-)
-
-const ContactComponent = () => (
-  <div className="content-section">
-    <h2>Contact</h2>
-    <p>Manage contact information and communication channels.</p>
-  </div>
-)
-
-const ImpactComponent = () => (
-  <div className="content-section">
-    <h2>Our Impact</h2>
-    <p>Track and measure the impact of our political intelligence platform.</p>
-  </div>
-)
 
 const AdminPanel = () => {
   const navigate = useNavigate()
@@ -85,6 +35,12 @@ const AdminPanel = () => {
   const [activeMenuItem, setActiveMenuItem] = useState("home")
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
+  
+  // Refs for dropdown menus
+  const profileMenuRef = useRef(null)
+  const notificationsRef = useRef(null)
+  const profileBtnRef = useRef(null)
+  const notificationsBtnRef = useRef(null)
 
   // Check authentication on component mount
   useEffect(() => {
@@ -98,9 +54,6 @@ const AdminPanel = () => {
           return
         }
         
-        // Optional: You can add token validation here
-        // For example, check if token is expired or make an API call to verify
-        
         setIsAuthenticated(true)
       } catch (error) {
         console.error('Error checking authentication:', error)
@@ -113,11 +66,38 @@ const AdminPanel = () => {
     checkAuth()
   }, [navigate])
 
+  // Handle click outside to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Close profile menu if clicked outside
+      if (showProfileMenu && 
+          profileMenuRef.current && 
+          !profileMenuRef.current.contains(event.target) &&
+          profileBtnRef.current && 
+          !profileBtnRef.current.contains(event.target)) {
+        setShowProfileMenu(false)
+      }
+      
+      // Close notifications if clicked outside
+      if (showNotifications && 
+          notificationsRef.current && 
+          !notificationsRef.current.contains(event.target) &&
+          notificationsBtnRef.current && 
+          !notificationsBtnRef.current.contains(event.target)) {
+        setShowNotifications(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showProfileMenu, showNotifications])
+
   const menuItems = [
     { label: "HOME", icon: <Home size={18} />, id: "home", component: Homeadmin },
     { label: "ABOUT US", icon: <Info size={18} />, id: "about-us", component: AboutUsAdmin },
     { label: "SERVICES", icon: <Building size={18} />, id: "services", component: Serviceadmin },
-   
     { label: "CAREER", icon: <Briefcase size={18} />, id: "career", component: CareerAdmin },
     { label: "CONTACT", icon: <Mail size={18} />, id: "contact", component: ContactAdmin },
     { label: "OUR IMPACT", icon: <TrendingUp size={18} />, id: "impact", component: OurImpactAdmin },
@@ -130,15 +110,44 @@ const AdminPanel = () => {
   ]
 
   const handleSignOut = () => {
-    // Clear auth token from localStorage
-    localStorage.removeItem('authToken')
-    // Optional: Remove any other stored user data
-    localStorage.removeItem('userData')
-    // Redirect to login page
-    navigate('/login')
+    try {
+      // Clear all localStorage items
+      localStorage.clear()
+      
+      // Or specifically remove auth-related items
+      // localStorage.removeItem('authToken')
+      // localStorage.removeItem('userData')
+      // localStorage.removeItem('userPermissions')
+      // localStorage.removeItem('userRole')
+      
+      // Close the profile menu
+      setShowProfileMenu(false)
+      
+      // Redirect to login page with replace to prevent going back
+      navigate('/login', { replace: true })
+    } catch (error) {
+      console.error('Error during sign out:', error)
+      // Even if there's an error, try to redirect
+      navigate('/login', { replace: true })
+    }
   }
 
-  // Fixed: Changed HomeComponent to Homeadmin (the correct imported component)
+  const handleProfileMenuToggle = () => {
+    setShowProfileMenu(!showProfileMenu)
+    // Close notifications if open
+    if (showNotifications) {
+      setShowNotifications(false)
+    }
+  }
+
+  const handleNotificationsToggle = () => {
+    setShowNotifications(!showNotifications)
+    // Close profile menu if open
+    if (showProfileMenu) {
+      setShowProfileMenu(false)
+    }
+  }
+
   const ActiveComponent = menuItems.find(item => item.id === activeMenuItem)?.component || Homeadmin
 
   // Show loading state while checking authentication
@@ -507,6 +516,7 @@ const AdminPanel = () => {
           transform: translateY(${showProfileMenu ? "0" : "-10px"});
           transition: all 0.3s ease;
           z-index: 1000;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
         }
 
         .dropdown-item {
@@ -526,6 +536,18 @@ const AdminPanel = () => {
           color: #ff9d33;
         }
 
+        .dropdown-item.logout-item {
+          color: #ef4444;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          margin-top: 8px;
+          padding-top: 12px;
+        }
+
+        .dropdown-item.logout-item:hover {
+          background: rgba(239, 68, 68, 0.1);
+          color: #ef4444;
+        }
+
         .notifications-dropdown {
           position: absolute;
           top: 100%;
@@ -542,6 +564,7 @@ const AdminPanel = () => {
           transform: translateY(${showNotifications ? "0" : "-10px"});
           transition: all 0.3s ease;
           z-index: 1000;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
         }
 
         .notifications-header {
@@ -559,6 +582,11 @@ const AdminPanel = () => {
           border-radius: 8px;
           margin-bottom: 8px;
           border-left: 3px solid #ff9d33;
+          transition: all 0.3s ease;
+        }
+
+        .notification-item:hover {
+          background: rgba(30, 35, 66, 0.5);
         }
 
         .notification-text {
@@ -702,11 +730,15 @@ const AdminPanel = () => {
                 <input type="text" className="search-input" placeholder="Search anything..." />
               </div>
 
-              <div className="navbar-btn" onClick={() => setShowNotifications(!showNotifications)}>
+              <div 
+                className="navbar-btn" 
+                onClick={handleNotificationsToggle}
+                ref={notificationsBtnRef}
+              >
                 <Bell size={18} />
                 <div className="notification-badge">3</div>
 
-                <div className="notifications-dropdown">
+                <div className="notifications-dropdown" ref={notificationsRef}>
                   <div className="notifications-header">
                     <h4 style={{ color: "white", fontSize: "14px", fontWeight: "600" }}>Notifications</h4>
                     <span style={{ color: "#ff9d33", fontSize: "11px", cursor: "pointer" }}>Mark all read</span>
@@ -720,7 +752,11 @@ const AdminPanel = () => {
                 </div>
               </div>
 
-              <div className="profile-btn" onClick={() => setShowProfileMenu(!showProfileMenu)}>
+              <div 
+                className="profile-btn" 
+                onClick={handleProfileMenuToggle}
+                ref={profileBtnRef}
+              >
                 <div className="profile-avatar">AD</div>
                 <div className="profile-info">
                   <h4>Admin User</h4>
@@ -735,7 +771,7 @@ const AdminPanel = () => {
                   }}
                 />
 
-                <div className="dropdown-menu">
+                <div className="dropdown-menu" ref={profileMenuRef}>
                   <div className="dropdown-item">
                     <User size={14} />
                     Profile Settings
@@ -749,14 +785,8 @@ const AdminPanel = () => {
                     Security
                   </div>
                   <div
-                    className="dropdown-item"
+                    className="dropdown-item logout-item"
                     onClick={handleSignOut}
-                    style={{
-                      color: "#ef4444",
-                      borderTop: "1px solid rgba(255, 255, 255, 0.08)",
-                      marginTop: "8px",
-                      paddingTop: "12px",
-                    }}
                   >
                     <LogOut size={14} />
                     Sign Out
@@ -771,24 +801,6 @@ const AdminPanel = () => {
             <ActiveComponent />
           </main>
         </div>
-
-        {/* Click outside handlers */}
-        {(showProfileMenu || showNotifications) && (
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              zIndex: 999,
-            }}
-            onClick={() => {
-              setShowProfileMenu(false)
-              setShowNotifications(false)
-            }}
-          />
-        )}
       </div>
     </>
   )
